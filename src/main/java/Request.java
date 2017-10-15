@@ -1,8 +1,6 @@
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 /**
@@ -11,11 +9,11 @@ import java.util.StringTokenizer;
 public class Request {
 
     final String method;
-    String uri;
     final String httpVersion;
+    final boolean isIndexFileRequested;
+    String uri;
 
-    Request(InputStream inputStream) {
-        final String request = getInputString(inputStream);
+    Request(String request) {
         final StringTokenizer stringTokenizer = new StringTokenizer(request, " \r\n");
         method = stringTokenizer.nextToken();
         uri = stringTokenizer.nextToken();
@@ -29,22 +27,13 @@ public class Request {
 
         cutAnchor();
         cutParameters();
-    }
 
-    String getInputString(InputStream is) {
-        try(final ByteArrayOutputStream result = new ByteArrayOutputStream()) {
-            final byte[] buffer = new byte[Constants.INPUT_BUFFER_SIZE];
-            final int length = is.read(buffer);
-            result.write(buffer, 0, length);
-            return result.toString(Constants.CHARSET);
-        } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
-            return "";
-        }
+        isIndexFileRequested = uri.endsWith("/") && !uri.contains(".");
+        updateDirectoryUri();
     }
 
     String getFileExtension() {
-         return uri.substring(uri.lastIndexOf('.') + 1, uri.length());
+        return uri.substring(uri.lastIndexOf('.') + 1, uri.length());
     }
 
     private void cutAnchor() {
@@ -55,5 +44,19 @@ public class Request {
     private void cutParameters() {
         final int parameterIndex = uri.indexOf('?');
         if (parameterIndex != -1) uri = uri.substring(0, parameterIndex);
+    }
+
+    private void updateDirectoryUri() {
+        if (uri.endsWith("/")) {
+            uri += "index.html";
+        }
+    }
+
+    boolean isSupportedMethod() {
+        return method.equals("GET") || method.equals("HEAD");
+    }
+
+    boolean isRootEscaping() {
+        return uri.contains("../");
     }
 }

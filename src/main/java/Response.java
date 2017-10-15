@@ -32,14 +32,14 @@ public class Response {
     String buildResponse() {
         final Date currentDateTime = new Date(System.currentTimeMillis());
         final StringBuilder response = new StringBuilder();
-        response.append(httpVersion + ' ' + responseCode.getCode() + "\r\n");
-        response.append("Date: " + new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US).format(currentDateTime) + "\r\n");
+        response.append(httpVersion).append(' ').append(responseCode.getCode()).append("\r\n");
+        response.append("Date: ").append(new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US).format(currentDateTime)).append("\r\n");
         response.append("Server: Highload server\r\n");
         if (file != null) {
-            response.append("Content-Length: " + file.length() + "\r\n");
-            response.append("Content-Type: " + contentType + "\r\n");
+            response.append("Content-Length: ").append(file.length()).append("\r\n");
+            response.append("Content-Type: ").append(contentType).append("\r\n");
         }
-        if (responseCode.equals(Constants.Codes.NOT_ALLOWED)) {
+        if (responseCode == Constants.Codes.NOT_ALLOWED) {
             response.append("Allow: GET, HEAD");
         }
         response.append("Connection: Close\r\n");
@@ -81,7 +81,7 @@ public class Response {
             case "swf":
                 return "application/x-shockwave-flash";
             default:
-                return "";
+                return null;
         }
     }
 }

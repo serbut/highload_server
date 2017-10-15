@@ -6,13 +6,14 @@ import java.net.Socket;
  */
 public class Task implements Runnable {
 
-    private InputStream inputStream;
     private OutputStream outputStream;
+    private BufferedReader bufferedReader;
 
     Task(Socket clientSocket) {
         try {
-            this.inputStream = clientSocket.getInputStream();
+            final InputStream inputStream = clientSocket.getInputStream();
             this.outputStream = clientSocket.getOutputStream();
+            this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
         }
@@ -20,29 +21,43 @@ public class Task implements Runnable {
 
     @Override
     public void run() {
-        try {
-            final Request request = new Request(inputStream);
-            final Response response;
-            if (!request.method.equals( "GET") && !request.method.equals( "HEAD")) {
-                response = new Response(request.method, Constants.Codes.NOT_ALLOWED, request.httpVersion);
+        final String requestString = getRequestString();
+        if (requestString == null) {
+            return;
+        }
+        final Request request = new Request(requestString);
+        final Response response;
+        if (request.isSupportedMethod()) {
+            final File file = new File(request.uri);
+            if (request.isRootEscaping() || request.isIndexFileRequested && !file.exists()) {
+                response = new Response(request.method, Constants.Codes.FORBIDDEN, request.httpVersion);
+            } else if (!file.exists()) {
+                response = new Response(request.method, Constants.Codes.NOT_FOUND, request.httpVersion);
             } else {
-                final File file;
-                if (request.uri.endsWith("/")) {
-                    file = new File(request.uri + "index.html");
-                } else {
-                    file = new File(request.uri);
-                }
-                if (request.uri.contains("../") || (request.uri.endsWith("/") && !file.exists() && !request.uri.contains("."))) { // change this
-                    response = new Response(request.method, Constants.Codes.FORBIDDEN, request.httpVersion);
-                } else if (!file.exists()) {
-                    response = new Response(request.method, Constants.Codes.NOT_FOUND, request.httpVersion);
-                } else {
-                    response = new Response(request.method, Constants.Codes.OK, request.httpVersion, file, request.getFileExtension());
-                }
+                response = new Response(request.method, Constants.Codes.OK, request.httpVersion, file, request.getFileExtension());
             }
+        } else {
+            response = new Response(request.method, Constants.Codes.NOT_ALLOWED, request.httpVersion);
+        }
+        try {
             response.write(outputStream);
+            bufferedReader.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
+    }
+
+    private String getRequestString() {
+        try {
+            final String request = bufferedReader.readLine();
+            if (request == null || request.isEmpty()) {
+                return null;
+            }
+            return request;
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
+            return null;
         }
     }
 }
