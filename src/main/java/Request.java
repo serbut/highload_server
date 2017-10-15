@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.URLDecoder;
-import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 /**
@@ -20,7 +19,7 @@ public class Request {
         try {
             uri = URLDecoder.decode(uri, Constants.CHARSET);
         } catch (UnsupportedEncodingException e) {
-            System.out.println(e.getLocalizedMessage());
+            System.err.println(e.getLocalizedMessage());
         }
         httpVersion = stringTokenizer.nextToken();
         uri = "ROOT" + uri;

@@ -8,19 +8,21 @@ import java.util.concurrent.Executors;
  */
 public class Server {
     private final int port;
-    private Executor executor;
+    private final Executor executor;
 
-    Server(int port, int threads) {
-        this.port = port;
-        executor = Executors.newFixedThreadPool(threads);
+    Server() {
+        this.port = Constants.PORT;
+        executor = Executors.newFixedThreadPool(Constants.THREADS);
     }
+
     public void start() {
         try (final ServerSocket socket = new ServerSocket(port)) {
+            //noinspection InfiniteLoopStatement
             while (true) {
                 executor.execute(new Task(socket.accept()));
             }
         } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
+            System.err.println(e.getLocalizedMessage());
         }
     }
 }

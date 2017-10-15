@@ -3,9 +3,7 @@
  */
 public class Main {
     public static void main(String[] args) {
-         final int PORT = 80;
-         final int THREADS = Runtime.getRuntime().availableProcessors();
-         final Server server = new Server(PORT, THREADS);
+         final Server server = new Server();
          server.start();
     }
 }

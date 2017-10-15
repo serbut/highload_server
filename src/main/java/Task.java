@@ -1,3 +1,5 @@
+import com.sun.istack.internal.Nullable;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -34,7 +36,7 @@ public class Task implements Runnable {
             } else if (!file.exists()) {
                 response = new Response(request.method, Constants.Codes.NOT_FOUND, request.httpVersion);
             } else {
-                response = new Response(request.method, Constants.Codes.OK, request.httpVersion, file, request.getFileExtension());
+                response = new Response(request.method, request.httpVersion, file, request.getFileExtension());
             }
         } else {
             response = new Response(request.method, Constants.Codes.NOT_ALLOWED, request.httpVersion);
@@ -48,6 +50,7 @@ public class Task implements Runnable {
 
     }
 
+    @Nullable
     private String getRequestString() {
         try {
             final String request = bufferedReader.readLine();
@@ -56,7 +59,7 @@ public class Task implements Runnable {
             }
             return request;
         } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
+            System.err.println(e.getLocalizedMessage());
             return null;
         }
     }

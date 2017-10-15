@@ -1,8 +1,9 @@
+import com.sun.istack.internal.Nullable;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * Created by sergeybutorin on 13/10/2017.
@@ -10,8 +11,8 @@ import java.util.Objects;
 public class Response {
 
     final String method;
-    Constants.Codes responseCode;
-    String httpVersion;
+    final Constants.Codes responseCode;
+    final String httpVersion;
     File file;
     String contentType;
 
@@ -21,9 +22,9 @@ public class Response {
         this.httpVersion = httpVersion;
     }
 
-    Response(String method, Constants.Codes responseCode, String httpVersion, File file, String extension) {
+    Response(String method, String httpVersion, File file, String extension) {
         this.method = method;
-        this.responseCode = responseCode;
+        this.responseCode = Constants.Codes.OK;
         this.httpVersion = httpVersion;
         this.file = file;
         this.contentType = getContentType(extension);
@@ -50,7 +51,7 @@ public class Response {
 
     void write(OutputStream outputStream) throws IOException {
         outputStream.write(buildResponse().getBytes());
-        if (file != null && !Objects.equals(method, "HEAD")) {
+        if (file != null && !method.equals("HEAD")) {
             try (final InputStream fileInputStream = new FileInputStream(file)) {
                 final byte [] buffer = new byte[Constants.RESPONSE_BUFFER_SIZE];
                 int read;
@@ -63,6 +64,7 @@ public class Response {
         outputStream.close();
     }
 
+    @Nullable
     String getContentType(String extension) {
         switch (extension) {
             case "html":
