@@ -12,6 +12,7 @@ public class Server {
 
     Server() {
         this.port = Constants.PORT;
+        System.out.println(Constants.THREADS);
         executor = Executors.newFixedThreadPool(Constants.THREADS);
     }
 

@@ -10,13 +10,19 @@ RUN apt-get install -y openjdk-8-jdk-headless
 
 RUN apt-get install -y maven
 
-ENV WORK /opt/forum_db
+RUN apt-get install -y git
+
+ENV WORK /opt/highload_server
 ADD src/ $WORK/src/
 ADD pom.xml $WORK/
+
+RUN mkdir -p /var/www/html &&\
+ git clone https://github.com/init/http-test-suite.git &&\
+ mv ./http-test-suite/httptest /var/www/html
 
 WORKDIR $WORK/
 RUN mvn package
 
 EXPOSE 80
 
-CMD java -jar target/highload_server-1.0-SNAPSHOT.jar
+CMD java -jar target/server-1.0-SNAPSHOT.jar
