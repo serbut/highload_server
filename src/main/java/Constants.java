@@ -3,6 +3,7 @@
  */
 public class Constants {
     static final int PORT = 80;
+    static final String ROOT_DIRECTORY = "/var/www/html";
     static final int THREADS = Runtime.getRuntime().availableProcessors();
     public enum Codes {
         @SuppressWarnings("EnumeratedConstantNamingConvention")

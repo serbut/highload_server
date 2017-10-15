@@ -22,15 +22,13 @@ public class Request {
             System.err.println(e.getLocalizedMessage());
         }
         httpVersion = stringTokenizer.nextToken();
-        uri = "/var/www/html" + uri;
+        uri = Constants.ROOT_DIRECTORY + uri;
 
         cutAnchor();
         cutParameters();
 
         isIndexFileRequested = uri.endsWith("/") && !uri.contains(".");
         updateDirectoryUri();
-
-        System.out.println(uri);
     }
 
     String getFileExtension() {
