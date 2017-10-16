@@ -9,18 +9,19 @@ import java.util.concurrent.Executors;
 public class Server {
     private final int port;
     private final Executor executor;
+    private final String root;
 
-    Server() {
-        this.port = Constants.PORT;
-        System.out.println(Constants.THREADS);
-        executor = Executors.newFixedThreadPool(Constants.THREADS);
+    Server(int port, int threads, String root) {
+        this.port = port;
+        executor = Executors.newFixedThreadPool(threads);
+        this.root = root;
     }
 
     public void start() {
         try (final ServerSocket socket = new ServerSocket(port)) {
             //noinspection InfiniteLoopStatement
             while (true) {
-                executor.execute(new Task(socket.accept()));
+                executor.execute(new Task(socket.accept(), root));
             }
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());

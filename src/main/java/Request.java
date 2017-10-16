@@ -12,7 +12,7 @@ public class Request {
     final boolean isIndexFileRequested;
     String uri;
 
-    Request(String request) {
+    Request(String request, String root) {
         final StringTokenizer stringTokenizer = new StringTokenizer(request, " \r\n");
         method = stringTokenizer.nextToken();
         uri = stringTokenizer.nextToken();
@@ -22,15 +22,13 @@ public class Request {
             System.err.println(e.getLocalizedMessage());
         }
         httpVersion = stringTokenizer.nextToken();
-        uri = "/var/www/html" + uri;
+        uri = root + uri;
 
         cutAnchor();
         cutParameters();
 
         isIndexFileRequested = uri.endsWith("/") && !uri.contains(".");
         updateDirectoryUri();
-
-        System.out.println(uri);
     }
 
     String getFileExtension() {

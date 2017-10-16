@@ -11,12 +11,14 @@ public class Task implements Runnable {
 
     private OutputStream outputStream;
     private BufferedReader bufferedReader;
+    private String root;
 
-    Task(Socket clientSocket) {
+    Task(Socket clientSocket, String root) {
         try {
             final InputStream inputStream = clientSocket.getInputStream();
             this.outputStream = clientSocket.getOutputStream();
             this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            this.root = root;
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
         }
@@ -28,7 +30,7 @@ public class Task implements Runnable {
         if (requestString == null) {
             return;
         }
-        final Request request = new Request(requestString);
+        final Request request = new Request(requestString, root);
         final Response response;
         if (request.isSupportedMethod()) {
             final File file = new File(request.uri);

@@ -2,8 +2,10 @@
  * Created by sergeybutorin on 13/10/2017.
  */
 public class Constants {
-    static final int PORT = 80;
+    static final String CONFIG_PATH = "/etc/httpd.conf";
+    static final int DEFAULT_PORT = 8080;
     static final int THREADS = Runtime.getRuntime().availableProcessors();
+    static final String DEFAULT_ROOT = "ROOT";
     public enum Codes {
         @SuppressWarnings("EnumeratedConstantNamingConvention")
         OK("200 OK"),
