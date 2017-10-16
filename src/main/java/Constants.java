@@ -3,9 +3,9 @@
  */
 public class Constants {
     static final String CONFIG_PATH = "/etc/httpd.conf";
-    static final int DEFAULT_PORT = 8080;
+    static final int DEFAULT_PORT = 80;
     static final int THREADS = Runtime.getRuntime().availableProcessors();
-    static final String DEFAULT_ROOT = "ROOT";
+    static final String DEFAULT_ROOT = "/var/www/html";
     public enum Codes {
         @SuppressWarnings("EnumeratedConstantNamingConvention")
         OK("200 OK"),
